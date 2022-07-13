@@ -1,3 +1,4 @@
+
 const chalk = require("chalk");
 
 const figlet = require("figlet");
@@ -14,7 +15,7 @@ const questions = [
 
         name: "authorization",
 
-        message: color("By Steven Authorization keys:"),
+        message: color("By Jihad Authorization keys:"),
 
         prefix: `${color("[", "redBright")}+${color("]", "redBright")}`,
 
@@ -127,95 +128,3 @@ const questions = [
 const asciiText = figlet.textSync("VIP NEW", {
 
     font: 'Graffiti',
-
-    horizontalLayout: 'default',
-
-    verticalLayout: 'default',
-
-    width: 75,
-
-    whitespaceBreak: true
-
-});
-
-console.log(color(asciiText, "redBright"));
-
-inquirer.prompt(questions)
-
-    .then(async ({ authorization, round, interval }) => {
-
-        const authParse = JSON.parse(authorization);
-
-        iStumble(interval, round, authParse);
-
-    });
-
-function iStumble(interval, round, authorization) {
-
-    setInterval(async function iStumble() {
-
-        try {
-
-            const { data } = await stageRequest(authorization, round);
-
-            if (typeof data == "string" && data.includes("BANNED")) {
-
-                console.error(color("BANNED", "redBright"));
-
-            } else if (typeof data == "object") {
-
-                const date = new Date();
-
-                let { Id, Username, Country, Region, Crowns, SkillRating } = data.User;
-
-                const print = `[${color(date.getHours())}:${date.getMinutes()}] ` + [color(Id, "blueBright"), color(Username), color(Country, "cyan"), color(Region, "cyanBright"), color(Crowns, "greenBright"), color(SkillRating, "yellowBright")].join(" | ");
-
-                console.log(print);
-
-            }
-
-        } catch (error) {}
-
-    }, Number(interval));
-
-}
-
-function color(text, color) {
-
-    return color ? chalk[color].bold(text) : chalk.white.bold(text);
-
-}
-
-function stageRequest(authorization, round) {
-
-    return new Promise((resolve, reject) => {
-
-        request({
-
-            url: `http://kitkabackend.eastus.cloudapp.azure.com:5010/round/finishv2/${round}`,
-
-            headers: {
-
-                Authorization: JSON.stringify(authorization),
-
-                use_response_compression: true,
-
-                "Accept-Encoding": "gzip",
-
-                "User-Agent": "Dalvik/2.1.0 (Linux; U; Android 9; Redmi 7 MIUI/V11.0.7.0.PFLMIXM)",
-
-            }
-
-        })
-
-            .then((response) => {
-
-                resolve(response);
-
-            })
-
-            .catch(reject);
-
-    });
-
-}
